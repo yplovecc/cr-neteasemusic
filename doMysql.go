@@ -1,11 +1,11 @@
 package main 
 import (
-    "fmt"
     "strings"
     "database/sql"
     _ "github.com/go-sql-driver/mysql"
     "strconv"
     "time"
+	"github.com/golang/glog"
 )
 
 var db *sql.DB
@@ -17,7 +17,7 @@ func initDB() {
 
 func writeDB(table_name string, dic map[string] interface{}){
     if db == nil {
-        fmt.Println("this is writedb init")
+        glog.Info("this is writedb init")
         initDB()
     }
     str_sql := "insert into " + table_name + " ("
@@ -37,7 +37,7 @@ func writeDB(table_name string, dic map[string] interface{}){
     slice_val = append(slice_val, time.Now().Unix())
 
     str_sql = str_sql + strings.Join(slice_col, ", ") + ") values (" + strings.Join(slice_x, ", ")  + ")"
-    fmt.Println(str_sql)
+    glog.Info(str_sql)
 
     //stmtIns, err := db.Prepare(str_sql)
     //if err != nil {
@@ -45,13 +45,13 @@ func writeDB(table_name string, dic map[string] interface{}){
     //}
     _, err := db.Exec(str_sql, slice_val...)
     if err != nil {
-        fmt.Println("insert error; dic: ", dic, err.Error())
+        glog.Infof("insert error; dic: %s, %s", dic, err.Error())
     }
 }
 
 func updateDB(table_name string, dic map[string] interface{}, cond map[string] interface{}){
     if db == nil {
-        fmt.Println("this is updatedb init")
+        glog.Info("this is updatedb init")
         initDB()
     }
     str_sql := "update " + table_name + " set "
@@ -75,21 +75,21 @@ func updateDB(table_name string, dic map[string] interface{}, cond map[string] i
 }
 func deleteDB(table_name string, cond string){
     if db == nil {
-        fmt.Println("this is deletedb init")
+        glog.Info("this is deletedb init")
         initDB()
     }
     str_sql := "delete from " + table_name + " where " + cond
-    fmt.Println(str_sql)
+    glog.Info(str_sql)
     result, err := db.Exec(str_sql)
     if err != nil {
         panic(err.Error())
     }
-    fmt.Println(result.RowsAffected())
+    glog.Info(result.RowsAffected())
 }
 
 func selectDB(str_sql string) []map[string]interface{}{
     if db == nil {
-        fmt.Println("this is query init")
+        glog.Info("this is query init")
         initDB()
     }
     rows, err := db.Query(str_sql)
@@ -124,7 +124,7 @@ func artistDB(dic map[string] interface{}){
     if len(dic) == 10 {
         executeSql := "select max(artist_id) as max_id from music_app_artist;"
         ret := selectDB(executeSql)
-        fmt.Println(ret)
+        glog.Info(ret)
         var max_id int
         if ret[0]["max_id"] == nil {
             max_id = 100001

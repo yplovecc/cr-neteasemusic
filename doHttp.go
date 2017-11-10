@@ -4,7 +4,6 @@ import (
 	"github.com/lestrrat/go-libxml2"
 	//"github.com/lestrrat/go-libxml2/parser"
 	"encoding/json"
-	"fmt"
 	"github.com/lestrrat/go-libxml2/types"
 	"github.com/lestrrat/go-libxml2/xpath"
 	"io"
@@ -12,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"github.com/golang/glog"
 )
 
 func InitDoc(rc io.Reader) types.Document {
@@ -56,7 +56,7 @@ func GetPage(url string) *http.Response {
 		panic(err.Error())
 	}
 	if resp.StatusCode != 200 {
-		fmt.Printf("url: %s ; return a bad code : %s\n", url, resp.StatusCode)
+		glog.Infof("url: %s ; return a bad code : %s", url, resp.StatusCode)
 		return nil
 	}
 	return resp
@@ -69,12 +69,12 @@ func GetJson(url string) map[string]interface{} {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		fmt.Printf("url: %s ; return a bad code : %s\n", url, resp.StatusCode)
+		glog.Infof("url: %s ; return a bad code : %s\n", url, resp.StatusCode)
 		return nil
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err.Error())
+		glog.Info(err.Error())
 		return nil
 	}
 	var json_ret map[string]interface{}
@@ -85,12 +85,12 @@ func GetJson(url string) map[string]interface{} {
 func GetAbsoluteURL(main_url string, ref_url string) string {
 	m, err := url.Parse(main_url)
 	if err != nil {
-		fmt.Println(err.Error())
+		glog.Info(err.Error())
 		return ""
 	}
 	r, err := url.Parse(ref_url)
 	if err != nil {
-		fmt.Println(err.Error())
+		glog.Info(err.Error())
 		return ""
 	}
 	return m.ResolveReference(r).String()

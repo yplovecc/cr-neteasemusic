@@ -84,7 +84,7 @@ func (self *Crawler) Process() {
 				artist.Status = 4
 				artist.Origin = "wangyi"
 				if self.IsArtistExist(artist.Url, artist.La) {
-					glog.Infof("%s is exist", artist.Alias)
+					//glog.Infof("%s is exist", artist.Alias)
 					continue
 				}
 				req := &dl.HttpRequest{Url: artist.Url,
